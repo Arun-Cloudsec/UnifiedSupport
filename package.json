@@ -1,0 +1,21 @@
+{
+  "name": "service-model-requirements-tracker",
+  "version": "1.0.0",
+  "description": "Service Model Requirements Tracker — with database storage and automated report emails",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "nodemailer": "^9.0.3",
+    "pg": "^8.22.0"
+  }
+}
