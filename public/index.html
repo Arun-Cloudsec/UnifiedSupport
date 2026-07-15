@@ -1,1 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Service Model Requirements Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1E1F1E; --ink-soft:#53565B; --muted:#8A8D91;
+  --bg:#F5F5F7; --surface:#FFFFFF; --border:#E4E4E7;
+  --lime:#91FF01; --purple:#AE74FF; --charcoal:#1E1F1E;
+  --success-bg:#ECFDF5; --success-border:#A7F3D0; --success-text:#047857;
+  --warn-bg:#FFFBEB; --warn-border:#FDE68A; --warn-text:#B45309;
+  --danger-bg:#FEF2F2; --danger-border:#FECACA; --danger-text:#B91C1C;
+  --na-bg:#F4F4F5; --na-border:#E4E4E7; --na-text:#8A8D91;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--bg); color:var(--ink); -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit; cursor:pointer;}
+input,select,textarea{font-family:inherit;}
 
+/* ---------- Login ---------- */
+#loginScreen{
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(circle at 30% 20%, #2a2b2a 0%, #1E1F1E 55%, #16171a 100%);
+  padding:24px;
+}
+.login-card{
+  background:var(--surface); border-radius:16px; padding:44px 40px 36px;
+  width:100%; max-width:380px; text-align:center;
+  box-shadow:0 24px 60px rgba(0,0,0,0.35);
+}
+.login-card img{height:26px; margin-bottom:28px;}
+.login-card h1{font-size:19px; font-weight:700; margin:0 0 8px; color:var(--ink); letter-spacing:-0.2px;}
+.login-card p{font-size:13.5px; color:var(--muted); margin:0 0 24px; line-height:1.5;}
+.login-input-wrap{position:relative; margin-bottom:16px;}
+#accessInput{
+  width:100%; padding:13px 14px; border-radius:10px; border:1.5px solid var(--border);
+  font-size:15px; letter-spacing:2px; text-align:center; outline:none; transition:border-color .15s;
+}
+#accessInput:focus{border-color:var(--purple);}
+.login-btn{
+  width:100%; padding:13px 14px; border-radius:10px; border:none;
+  background:var(--charcoal); color:#fff; font-size:14px; font-weight:600;
+  transition:background .15s;
+}
+.login-btn:hover{background:#000;}
+.login-error{
+  margin-top:14px; font-size:12.5px; color:var(--danger-text);
+  background:var(--danger-bg); border:1px solid var(--danger-border);
+  border-radius:8px; padding:9px 12px;
+}
+.login-foot{margin-top:22px; font-size:11px; color:var(--muted);}
+@keyframes shake{
+  10%,90%{transform:translateX(-1px);} 20%,80%{transform:translateX(2px);}
+  30%,50%,70%{transform:translateX(-4px);} 40%,60%{transform:translateX(4px);}
+}
+.shake{animation:shake .45s;}
+
+/* ---------- App shell ---------- */
+#app{display:none;}
+.topbar{
+  background:var(--surface); border-bottom:1px solid var(--border);
+  padding:14px 28px; display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:100; gap:16px; flex-wrap:wrap;
+}
+.brand{display:flex; align-items:center; gap:14px;}
+.brand img{height:20px;}
+.brand-div{width:1px; height:20px; background:var(--border);}
+.brand-title{font-size:15px; font-weight:700; color:var(--ink);}
+.topbar-actions{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.pct-chip{
+  display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink-soft);
+  background:var(--bg); border:1px solid var(--border); border-radius:20px; padding:5px 14px;
+}
+.pct-chip b{color:var(--ink); font-size:13px; font-weight:800;}
+.btn{
+  border-radius:8px; padding:8px 16px; font-size:12.5px; font-weight:600; border:1px solid transparent;
+  white-space:nowrap; transition:opacity .15s, transform .1s;
+}
+.btn:active{transform:scale(0.97);}
+.btn-primary{background:var(--charcoal); color:#fff;}
+.btn-primary:hover{opacity:0.85;}
+.btn-ghost{background:var(--surface); color:var(--ink-soft); border-color:var(--border);}
+.btn-ghost:hover{background:var(--bg);}
+.btn-danger{background:var(--danger-bg); color:var(--danger-text); border-color:var(--danger-border);}
+.btn-danger:hover{opacity:0.85;}
+
+.metabar{background:var(--surface); border-bottom:1px solid var(--border); padding:20px 28px;}
+.meta-grid{display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr 1fr; gap:16px; margin-bottom:16px;}
+.field-label{font-size:9.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.7px; margin-bottom:6px;}
+.meta-grid input{
+  width:100%; font-size:13.5px; border:1px solid var(--border); border-radius:8px; padding:9px 12px;
+  outline:none; transition:border-color .15s; color:var(--ink);
+}
+.meta-grid input:focus{border-color:var(--purple);}
+#meta_pn{font-size:16px; font-weight:700; padding:10px 12px;}
+.progress-row{display:flex; align-items:center; gap:12px;}
+.progress-row .lbl{font-size:11px; color:var(--muted); flex-shrink:0; width:80px;}
+.progress-track{flex:1; background:var(--border); border-radius:5px; height:7px; overflow:hidden;}
+.progress-fill{background:linear-gradient(90deg, var(--purple), var(--lime)); height:7px; border-radius:5px; transition:width .3s;}
+.progress-row .pct{font-size:13px; font-weight:800; color:var(--ink); width:42px; text-align:right;}
+
+.tabs{
+  background:var(--surface); border-bottom:1px solid var(--border);
+  display:flex; overflow-x:auto; padding:0 20px;
+}
+.tab{
+  display:flex; align-items:center; gap:8px; padding:14px 16px; border:none; background:none;
+  font-size:13px; font-weight:600; color:var(--ink-soft); white-space:nowrap;
+  border-bottom:2.5px solid transparent; transition:color .15s, border-color .15s;
+}
+.tab:hover{color:var(--ink);}
+.tab.active{color:var(--ink); border-bottom-color:var(--purple);}
+.tab-dot{width:7px; height:7px; border-radius:50%; flex-shrink:0;}
+.tab-pct{
+  font-size:10.5px; font-weight:700; color:var(--muted); background:var(--bg);
+  border-radius:10px; padding:2px 7px;
+}
+.tab.active .tab-pct{color:var(--ink); background:#EEE9FB;}
+
+.content{max-width:1180px; margin:0 auto; padding:24px 28px 60px;}
+.section{display:none;}
+.cat-header{display:flex; align-items:center; gap:12px; margin-bottom:18px;}
+.cat-badge{
+  width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+  font-size:15px; font-weight:800; color:#fff; flex-shrink:0;
+}
+.cat-title{font-size:19px; font-weight:700; color:var(--ink);}
+.cat-stats{margin-left:auto; font-size:12px; color:var(--muted); font-weight:600;}
+
+.item-row{
+  background:var(--surface); border:1px solid var(--border); border-radius:12px;
+  padding:16px 18px; margin-bottom:12px; transition:box-shadow .15s;
+}
+.item-row:hover{box-shadow:0 2px 10px rgba(20,20,30,0.05);}
+.item-top{display:flex; align-items:center; gap:10px; margin-bottom:5px; flex-wrap:wrap;}
+.item-id{
+  font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px; flex-shrink:0;
+}
+.item-label{font-size:14.5px; font-weight:700; color:var(--ink);}
+.type-badge{
+  font-size:9.5px; font-weight:700; padding:2px 8px; border-radius:6px; text-transform:uppercase; letter-spacing:.4px;
+}
+.type-std{background:#CCFBF1; color:#0F766E;}
+.type-cfg{background:#E0E7FF; color:#4338CA;}
+.type-opt{background:#FEF3C7; color:#92400E;}
+.status-ico{margin-left:auto; font-size:15px; flex-shrink:0;}
+.item-desc{font-size:12.5px; color:var(--muted); margin-bottom:12px; line-height:1.4;}
+.item-controls{display:grid; grid-template-columns:repeat(auto-fit, minmax(190px,1fr)); gap:10px;}
+.ctrl-field label{display:block; font-size:9.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px;}
+.ctrl-field select, .ctrl-field input{
+  width:100%; font-size:12.5px; border:1px solid var(--border); border-radius:7px; padding:7px 10px;
+  outline:none; color:var(--ink); background:var(--surface); transition:border-color .15s;
+}
+.ctrl-field select:focus, .ctrl-field input:focus{border-color:var(--purple);}
+
+.addl-box{
+  background:var(--surface); border:1px dashed var(--border); border-radius:12px; padding:16px 18px; margin-top:6px;
+}
+.addl-box label{display:block; font-size:11px; font-weight:700; color:var(--ink-soft); margin-bottom:8px;}
+.addl-box textarea{
+  width:100%; min-height:64px; font-size:13px; border:1px solid var(--border); border-radius:8px;
+  padding:9px 12px; resize:vertical; outline:none; color:var(--ink);
+}
+.addl-box textarea:focus{border-color:var(--purple);}
+
+/* ---------- Report modal ---------- */
+#reportModal{
+  display:none; position:fixed; inset:0; background:rgba(20,20,26,0.55); z-index:1000;
+  align-items:flex-start; justify-content:center; padding:32px 16px; overflow-y:auto;
+}
+.report-card{
+  background:var(--surface); border-radius:16px; width:100%; max-width:880px;
+  box-shadow:0 30px 80px rgba(0,0,0,0.35); margin-bottom:32px;
+}
+.report-topbar{
+  display:flex; align-items:center; justify-content:space-between; padding:18px 26px;
+  border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--surface);
+  border-radius:16px 16px 0 0; flex-wrap:wrap; gap:10px;
+}
+.report-topbar h2{font-size:15px; font-weight:700; margin:0;}
+.report-actions{display:flex; gap:8px; flex-wrap:wrap;}
+.report-body{padding:26px;}
+.close-x{
+  background:var(--bg); border:none; border-radius:8px; width:30px; height:30px;
+  font-size:16px; color:var(--ink-soft); line-height:1;
+}
+.close-x:hover{background:var(--border);}
+
+/* ---------- Print ---------- */
+@media print{
+  .noprint, #loginScreen, .topbar, .tabs, .metabar{display:none !important;}
+  #reportModal{position:static; background:none; padding:0; display:block !important;}
+  .report-card{box-shadow:none; max-width:100%;}
+  .report-topbar{display:none !important;}
+}
+@media (max-width:900px){
+  .meta-grid{grid-template-columns:1fr 1fr;}
+}
+
+/* ---------- Toast ---------- */
+.toast{
+  position:fixed; left:50%; bottom:28px; transform:translate(-50%, 16px);
+  background:var(--charcoal); color:#fff; font-size:13px; font-weight:600;
+  padding:12px 20px; border-radius:10px; box-shadow:0 12px 30px rgba(0,0,0,0.25);
+  opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; z-index:2000; max-width:90vw;
+}
+.toast.show{opacity:1; transform:translate(-50%, 0);}
+
+/* ---------- Report email status ---------- */
+.report-email-status{
+  font-size:12.5px; color:var(--ink-soft); background:var(--bg); border:1px solid var(--border);
+  border-radius:9px; padding:10px 14px; margin-bottom:18px;
+}
+
+/* ---------- Load-from-database modal ---------- */
+#loadModal{
+  display:none; position:fixed; inset:0; background:rgba(20,20,26,0.55); z-index:1000;
+  align-items:center; justify-content:center; padding:24px;
+}
+.load-card{
+  background:var(--surface); border-radius:16px; width:100%; max-width:520px; max-height:80vh;
+  display:flex; flex-direction:column; box-shadow:0 30px 80px rgba(0,0,0,0.35);
+}
+.load-topbar{
+  display:flex; align-items:center; justify-content:space-between; padding:18px 22px;
+  border-bottom:1px solid var(--border);
+}
+.load-topbar h2{font-size:15px; font-weight:700; margin:0;}
+.load-list{overflow-y:auto; padding:10px;}
+.load-row{
+  width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px;
+  background:none; border:none; border-radius:10px; padding:12px 14px; text-align:left;
+  transition:background .15s;
+}
+.load-row:hover{background:var(--bg);}
+.load-row-title{font-size:13.5px; font-weight:700; color:var(--ink);}
+.load-row-sub{font-size:11.5px; color:var(--muted); margin-top:2px;}
+.load-row-date{font-size:11px; color:var(--muted); flex-shrink:0;}
+.load-empty{padding:24px; text-align:center; font-size:13px; color:var(--muted);}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="loginScreen">
+  <div class="login-card" id="loginCard">
+    <h1>Service Model Requirements Tracker</h1>
+    <p>This tracker contains confidential service model configuration data.<br>Enter the access code to continue.</p>
+    <div class="login-input-wrap">
+      <input id="accessInput" type="password" placeholder="Access code" maxlength="20" onkeydown="loginKey(event)" autocomplete="off">
+    </div>
+    <button class="login-btn" onclick="tryUnlock()">Unlock</button>
+    <div class="login-error" id="loginError" style="display:none;">Incorrect access code. Please try again.</div>
+    <div class="login-foot">Internal Use Only</div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app">
+
+  <div class="topbar noprint">
+    <div class="brand">
+      <div class="brand-title">Service Model Requirements Tracker</div>
+    </div>
+    <div class="topbar-actions">
+      <div class="pct-chip">Completion <b id="pctBadge">0%</b></div>
+      <button class="btn btn-primary" onclick="genReport()">Generate Report</button>
+      <button class="btn btn-ghost" onclick="saveToDb()">Save to Database</button>
+      <button class="btn btn-ghost" onclick="openLoadModal()">Load from Database</button>
+      <button class="btn btn-ghost" onclick="exportJSON()">Save (JSON)</button>
+      <label class="btn btn-ghost" style="display:inline-flex;align-items:center;">
+        Load (JSON)
+        <input type="file" accept="application/json" style="display:none;" onchange="importJSON(this)">
+      </label>
+      <button class="btn btn-ghost" onclick="window.print()">Print</button>
+      <button class="btn btn-danger" onclick="clearAll()">Reset</button>
+    </div>
+  </div>
+
+  <div class="metabar noprint">
+    <div class="meta-grid">
+      <div>
+        <div class="field-label">Product Name</div>
+        <input id="meta_pn" type="text" placeholder="e.g. TalentScope, Lexicon AI..." oninput="sm('pn', this.value)">
+      </div>
+      <div>
+        <div class="field-label">Customer / Account</div>
+        <input id="meta_cu" type="text" placeholder="e.g. ADCB, DGE..." oninput="sm('cu', this.value)">
+      </div>
+      <div>
+        <div class="field-label">Product Owner</div>
+        <input id="meta_po" type="text" placeholder="Owner name" oninput="sm('po', this.value)">
+      </div>
+      <div>
+        <div class="field-label">Service Delivery Lead</div>
+        <input id="meta_sdm" type="text" placeholder="SDM name" oninput="sm('sdm', this.value)">
+      </div>
+      <div>
+        <div class="field-label">Target Go-Live</div>
+        <input id="meta_gl" type="date" oninput="sm('gl', this.value)">
+      </div>
+    </div>
+    <div class="progress-row">
+      <div class="lbl">Progress</div>
+      <div class="progress-track"><div class="progress-fill" id="pgBar" style="width:0%;"></div></div>
+      <div class="pct" id="pgLabel">0%</div>
+    </div>
+  </div>
+
+  <div class="tabs noprint" id="tabsRow"></div>
+
+  <div class="content" id="contentArea"></div>
+</div>
+
+<!-- ============ REPORT MODAL ============ -->
+<div id="reportModal">
+  <div class="report-card">
+    <div class="report-topbar noprint">
+      <h2>Requirements Report</h2>
+      <div class="report-actions">
+        <button class="btn btn-ghost" onclick="exportPDF()">Download PDF</button>
+        <button class="btn btn-ghost" onclick="exportExcel()">Download Excel</button>
+        <button class="btn btn-ghost" onclick="exportWord()">Download Word</button>
+        <button class="btn btn-ghost" onclick="window.print()">Print</button>
+        <button class="close-x" onclick="closeRep()">&times;</button>
+      </div>
+    </div>
+    <div class="report-body">
+      <div class="report-email-status noprint" id="repEmailStatus">Saving and emailing report&hellip;</div>
+      <div id="repContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LOAD FROM DATABASE MODAL ============ -->
+<div id="loadModal">
+  <div class="load-card">
+    <div class="load-topbar">
+      <h2>Load a saved submission</h2>
+      <button class="close-x" onclick="closeLoadModal()">&times;</button>
+    </div>
+    <div class="load-list" id="loadList"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+
+const ACCESS_CODE = "625244";
+const FW = {"A":{"title":"Coverage & Availability","color":"#4F46E5","items":[{"id":"A1","label":"Delivery Model","type":"cfg","desc":"How and where the service is physically delivered","options":["Hybrid (Remote + Onsite)","Remote Only","Onsite Only","TBD"]},{"id":"A2","label":"Support Hours","type":"cfg","desc":"Window during which the team actively handles tickets","options":["8x5 (Mon-Fri Standard)","16x5 (Extended)","24x5","24x7 (Full)","Custom"]},{"id":"A3","label":"Language of Support","type":"cfg","desc":"Language(s) used for all support communications","options":["English Only","English + Arabic","Multi-language","Custom"]},{"id":"A4","label":"Time Zone Anchor","type":"cfg","desc":"Primary timezone for SLA clock measurement","options":["GST (UTC+4)","EST (UTC-5)","GMT (UTC+0)","CET (UTC+1)","Custom"]},{"id":"A5","label":"Public Holiday Coverage","type":"std","desc":"Coverage model during regional public holidays","options":["P1 On-Call Only (Standard)","Full Coverage","Business Hours Only","Custom"]}]},"B":{"title":"Support Channels","color":"#7C3AED","items":[{"id":"B1","label":"Email / ITSM Ticketing","type":"std","desc":"Primary ticket creation channel - always required","options":["Yes - Required (Standard)"]},{"id":"B2","label":"Voice / Phone Channel","type":"cfg","desc":"Inbound voice support and IVR routing","options":["None Required","Toll-Free 800 Number","Direct Line","IVR + Toll-Free","Custom"]},{"id":"B3","label":"On-Call / Alerting Platform","type":"std","desc":"Tool managing P1 after-hours escalations","options":["Opsgenie (Recommended)","PagerDuty","Squadcast","Custom"]},{"id":"B4","label":"Self-Service Portal","type":"opt","desc":"Customer-facing portal for ticket logging and KB","options":["Yes - Required","Planned (Q1)","Planned (Q2)","Planned (Q3)","Not Required"]},{"id":"B5","label":"Chat / Collaboration Channel","type":"opt","desc":"Real-time L1 triage channel per customer","options":["Microsoft Teams","Slack","Google Chat","None","Custom"]}]},"C":{"title":"Team & Staffing","color":"#0D9488","items":[{"id":"C1","label":"Number of Support Towers","type":"cfg","desc":"Service towers required for this product","options":["1 Tower","2 Towers","3 Towers (Full Model)","Custom"]},{"id":"C2","label":"Support Tiers Required","type":"std","desc":"Minimum tiered support structure","options":["L1 + L2 + Lead (Standard)","L1 + L2 Only","L1 Only (Basic)","Custom"]},{"id":"C3","label":"P1 On-Call Structure","type":"std","desc":"Who is engaged for P1 after-hours incidents","options":["L2 + Lead Auto-Engaged","Lead Only","Custom Rota"]},{"id":"C4","label":"Service Manager Model","type":"cfg","desc":"Account management and service ownership model","options":["Dedicated IT Service Manager","Shared Pool (Standard)","Fractional / Part-Time","Not Required"]},{"id":"C5","label":"Service Delivery Lead (SDM)","type":"std","desc":"Named SDM owning SLA performance and governance","options":["Named SDM Required (Standard)"]},{"id":"C6","label":"Arabic-Speaking Resource","type":"cfg","desc":"Language-specific staffing requirement","options":["Not Required","Required - Full Time","Required - On-Call","Under Review"]}]},"D":{"title":"Tooling & Licensing","color":"#D97706","items":[{"id":"D1","label":"ITSM Platform","type":"cfg","desc":"System of record for incidents, requests and SLAs","options":["ManageEngine","ServiceNow","Jira Service Management","Freshdesk","Zendesk","Custom"]},{"id":"D2","label":"DevOps / CI-CD Tooling","type":"cfg","desc":"Pipeline and release management toolchain","options":["Azure DevOps","GitHub + Actions","GitLab","Not Required","Custom"]},{"id":"D3","label":"Observability & Monitoring","type":"std","desc":"Proactive monitoring, alerting and log analytics","options":["Azure Monitor + App Insights","Datadog","Grafana + Prometheus","Dynatrace","Custom"]},{"id":"D4","label":"Security Stack","type":"cfg","desc":"SOC/SIEM, compliance certifications, pen testing","options":["SOC/SIEM + ISO 27001 + VAPT (Full)","SOC/SIEM + VAPT Only","ISO 27001 Only","Custom"]},{"id":"D5","label":"Backup & DR Platform","type":"cfg","desc":"Data protection and disaster recovery tooling","options":["Core 42 + Azure Backup","Azure Backup Only","Veeam","Not Required","Custom"]},{"id":"D6","label":"Knowledge Management","type":"std","desc":"KB and runbook library for known issues","options":["KB + Runbooks in ITSM (Standard)","Confluence","SharePoint","Custom"]}]},"E":{"title":"SLAs & Service Levels","color":"#DC2626","items":[{"id":"E1","label":"P1 Response Target","type":"cfg","desc":"Time from ticket creation to first human response","options":["15 minutes","30 minutes","1 hour","Custom"]},{"id":"E2","label":"P1 Resolution Target","type":"cfg","desc":"Time from ticket creation to service restoration","options":["2 hours","4 hours","8 hours","Best Effort","Custom"]},{"id":"E3","label":"P2 Response Target","type":"cfg","desc":"Response time for High priority incidents","options":["30 minutes","1 hour","2 hours","Custom"]},{"id":"E4","label":"P2 Resolution Target","type":"cfg","desc":"Resolution time for High priority incidents","options":["4 hours","8 hours","1 business day","Custom"]},{"id":"E5","label":"P3 Response Target","type":"cfg","desc":"Response time for Medium priority issues","options":["1 hour","2 hours","4 hours","Custom"]},{"id":"E6","label":"P4 Response Target","type":"cfg","desc":"Response time for Low / service requests","options":["4 hours","1 business day","2 business days","Custom"]},{"id":"E7","label":"VIP / Priority Tier","type":"opt","desc":"Enhanced SLA tier for strategic accounts","options":["Yes - Required","No","Under Review"]},{"id":"E8","label":"Uptime Commitment","type":"cfg","desc":"Monthly availability target for the service","options":["99.9%","99.95%","99.99%","Best Effort","Custom"]}]},"F":{"title":"Service Management Processes","color":"#0369A1","items":[{"id":"F1","label":"Incident Management","type":"std","desc":"End-to-end incident lifecycle framework","options":["ITIL-Aligned (Standard)","ITIL + Custom States","Custom"]},{"id":"F2","label":"RCA / Problem Management","type":"cfg","desc":"When root cause analysis is triggered","options":["P1 Only (Standard)","P1 + P2 (Recurring)","P1 + P2 + P3","All Priorities","Custom"]},{"id":"F3","label":"Change Management","type":"cfg","desc":"Governance process for production changes","options":["Full CAB Required","Standard Changes Self-Approved","Emergency Only","Custom"]},{"id":"F4","label":"Request Fulfilment","type":"opt","desc":"Standard service request handling via catalogue","options":["Service Catalogue Required","Basic Request Handling","Not Required","Custom"]},{"id":"F5","label":"Major Incident Management","type":"std","desc":"MIM process for P1 critical events + PIR","options":["MIM + Bridge + PIR (Standard)","MIM + PIR Only","Custom"]}]},"G":{"title":"Commercial & Cost","color":"#475569","items":[{"id":"G1","label":"Pricing Model","type":"cfg","desc":"How the service fee is calculated and charged","options":["Fixed Monthly Fee Per Customer","Consumption-Based","Per User / Per Seat","Hybrid","Custom"]},{"id":"G2","label":"Billing Currency","type":"cfg","desc":"Currency for invoicing and contracts","options":["AED (UAE Dirham)","USD (US Dollar)","EUR (Euro)","GBP","SAR (Saudi Riyal)","Custom"]},{"id":"G3","label":"Billing Frequency","type":"cfg","desc":"How often invoices are issued to the customer","options":["Monthly (Standard)","Quarterly","Annual","Custom"]},{"id":"G4","label":"Target Gross Margin","type":"cfg","desc":"Commercial margin target for this product","options":["10% (Standard)","15%","20%","25%","Custom"]},{"id":"G5","label":"Cost Review Cadence","type":"std","desc":"How often actuals are reconciled against the model","options":["Monthly Actuals + Quarterly P&L (Standard)","Monthly Only","Quarterly Only"]}]},"H":{"title":"Governance & Reporting","color":"#0F766E","items":[{"id":"H1","label":"Service Report Frequency","type":"std","desc":"How often the SLA and volume report is delivered","options":["Monthly (Standard)","Weekly","Bi-weekly","Quarterly"]},{"id":"H2","label":"Operational Review Cadence","type":"std","desc":"Internal operational review frequency","options":["Monthly Ops Review (Standard)","Bi-weekly","Quarterly"]},{"id":"H3","label":"Business Review (QBR) Cadence","type":"std","desc":"Customer-facing strategic review frequency","options":["Quarterly QBR (Standard)","Monthly","Bi-annual"]},{"id":"H4","label":"Compliance Requirements","type":"cfg","desc":"Regulatory or certification requirements","options":["None","ISO 27001","SOC 2 Type II","HIPAA","PCI-DSS","GDPR","ISO 27001 + GDPR","Custom"]},{"id":"H5","label":"KPI Set","type":"cfg","desc":"Performance metrics tracked and reported","options":["Standard KPIs (SLA%, MTTR, CSAT, FCR)","Standard + Custom KPIs","Customer-Defined KPIs","Custom"]},{"id":"H6","label":"Escalation Reporting","type":"cfg","desc":"When and how leadership is notified of breaches","options":["Auto-Alert on SLA Breach (Standard)","Weekly Digest","Manual Escalation Only","Custom"]}]}};
+const SK = ["A","B","C","D","E","F","G","H"];
+const TYPE_LABEL = {std:"Standard", cfg:"Configurable", opt:"Optional"};
+const STATUS_ICON = {
+  "Confirmed":"&#9989;", "In Progress":"&#128260;", "Pending Customer Input":"&#128203;",
+  "Under Review":"&#9888;&#65039;", "Not Applicable":"&#10060;"
+};
+let state = { meta:{}, resp:{}, addl:{} };
+let currentId = null;
+
+/* ---------- Login ---------- */
+function tryUnlock(){
+  const val = document.getElementById('accessInput').value.trim();
+  const err = document.getElementById('loginError');
+  const card = document.getElementById('loginCard');
+  if(val === ACCESS_CODE){
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+  } else {
+    err.style.display = 'block';
+    card.classList.remove('shake');
+    void card.offsetWidth;
+    card.classList.add('shake');
+  }
+}
+function loginKey(e){ if(e.key === 'Enter') tryUnlock(); }
+
+/* ---------- State helpers ---------- */
+function sm(k,v){ state.meta[k] = v; }
+function saveAddl(k,v){ state.addl[k] = v; }
+
+function updateR(id, field, val){
+  if(!state.resp[id]) state.resp[id] = { status:"", value:"", custom:"", notes:"" };
+  state.resp[id][field] = val;
+  if(field === 'value'){
+    const wrap = document.getElementById('cust_wrap_'+id);
+    if(wrap) wrap.style.display = (val === 'Custom') ? 'block' : 'none';
+  }
+  refreshIcon(id);
+  updateProg();
+}
+
+function refreshIcon(id){
+  const el = document.getElementById('ico_'+id);
+  if(!el) return;
+  const r = state.resp[id] || {};
+  el.innerHTML = STATUS_ICON[r.status] || '<span style="color:#D0D0D5;">&#9675;</span>';
+}
+function refreshAllIcons(){
+  SK.forEach(k => FW[k].items.forEach(item => refreshIcon(item.id)));
+}
+
+function computeCounts(items){
+  let confirmed = 0;
+  items.forEach(i => {
+    const r = state.resp[i.id] || {};
+    if(r.status === 'Confirmed' || r.status === 'Not Applicable') confirmed++;
+  });
+  return confirmed;
+}
+
+function updateProg(){
+  const all = SK.flatMap(k => FW[k].items);
+  const done = computeCounts(all);
+  const pct = all.length ? Math.round(done/all.length*100) : 0;
+  const pb = document.getElementById('pgBar'); if(pb) pb.style.width = pct + '%';
+  const pl = document.getElementById('pgLabel'); if(pl) pl.textContent = pct + '%';
+  const bd = document.getElementById('pctBadge'); if(bd) bd.textContent = pct + '%';
+  SK.forEach(k => {
+    const items = FW[k].items;
+    const sd = computeCounts(items);
+    const sp = items.length ? Math.round(sd/items.length*100) : 0;
+    const pe = document.getElementById('prog_'+k); if(pe) pe.textContent = sp + '%';
+    const spe = document.getElementById('sp_'+k); if(spe) spe.textContent = sd + ' of ' + items.length + ' confirmed';
+  });
+}
+
+/* ---------- Rendering ---------- */
+function itemRowHTML(item, color){
+  const opts = item.options.map(o => '<option value="'+escAttr(o)+'">'+escHtml(o)+'</option>').join('');
+  return ''
+    + '<div class="item-row" id="row_'+item.id+'">'
+    +   '<div class="item-top">'
+    +     '<span class="item-id" style="background:'+color+'1A;color:'+color+'">'+item.id+'</span>'
+    +     '<span class="item-label">'+escHtml(item.label)+'</span>'
+    +     '<span class="type-badge type-'+item.type+'">'+TYPE_LABEL[item.type]+'</span>'
+    +     '<span class="status-ico" id="ico_'+item.id+'"><span style="color:#D0D0D5;">&#9675;</span></span>'
+    +   '</div>'
+    +   '<div class="item-desc">'+escHtml(item.desc)+'</div>'
+    +   '<div class="item-controls">'
+    +     '<div class="ctrl-field"><label>Status</label>'
+    +       '<select id="stat_'+item.id+'" onchange="updateR(\''+item.id+'\',\'status\',this.value)">'
+    +         '<option value="">Not started</option>'
+    +         '<option>Confirmed</option><option>In Progress</option>'
+    +         '<option>Pending Customer Input</option><option>Under Review</option>'
+    +         '<option>Not Applicable</option>'
+    +       '</select></div>'
+    +     '<div class="ctrl-field"><label>Selected Value</label>'
+    +       '<select id="val_'+item.id+'" onchange="updateR(\''+item.id+'\',\'value\',this.value)">'
+    +         '<option value="">&mdash; Select &mdash;</option>'+opts+'</select></div>'
+    +     '<div class="ctrl-field" id="cust_wrap_'+item.id+'" style="display:none">'
+    +       '<label>Custom Value</label>'
+    +       '<input id="cust_'+item.id+'" type="text" placeholder="Specify..." oninput="updateR(\''+item.id+'\',\'custom\',this.value)"></div>'
+    +     '<div class="ctrl-field"><label>Notes</label>'
+    +       '<input id="notes_'+item.id+'" type="text" placeholder="Optional context..." oninput="updateR(\''+item.id+'\',\'notes\',this.value)"></div>'
+    +   '</div>'
+    + '</div>';
+}
+
+function renderCategory(key){
+  const cat = FW[key];
+  let html = ''
+    + '<div class="cat-header">'
+    +   '<div class="cat-badge" style="background:'+cat.color+'">'+key+'</div>'
+    +   '<div class="cat-title">'+cat.title+'</div>'
+    +   '<div class="cat-stats" id="sp_'+key+'">0 of '+cat.items.length+' confirmed</div>'
+    + '</div>';
+  html += cat.items.map(it => itemRowHTML(it, cat.color)).join('');
+  html += ''
+    + '<div class="addl-box">'
+    +   '<label>Product-specific notes for '+cat.title+'</label>'
+    +   '<textarea id="addl_'+key+'" placeholder="Any additional requirements specific to this product..." oninput="saveAddl(\''+key+'\', this.value)"></textarea>'
+    + '</div>';
+  document.getElementById('sec_'+key).innerHTML = html;
+}
+
+function renderTabsAndSections(){
+  const tabsEl = document.getElementById('tabsRow');
+  const contentEl = document.getElementById('contentArea');
+  tabsEl.innerHTML = SK.map(k => ''
+    + '<button class="tab" id="tab_'+k+'" onclick="showSection(\''+k+'\')">'
+    +   '<span class="tab-dot" style="background:'+FW[k].color+'"></span>'
+    +   FW[k].title
+    +   '<span class="tab-pct" id="prog_'+k+'">0%</span>'
+    + '</button>').join('');
+  contentEl.innerHTML = SK.map(k => '<div class="section" id="sec_'+k+'"></div>').join('');
+  SK.forEach(renderCategory);
+}
+
+function showSection(key){
+  SK.forEach(k => {
+    const s = document.getElementById('sec_'+k); if(s) s.style.display = 'none';
+    const t = document.getElementById('tab_'+k); if(t) t.classList.remove('active');
+  });
+  const sec = document.getElementById('sec_'+key); if(sec) sec.style.display = 'block';
+  const tab = document.getElementById('tab_'+key); if(tab) tab.classList.add('active');
+}
+
+/* ---------- Utils ---------- */
+function escHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escAttr(s){ return escHtml(s); }
+function fmtDate(d){
+  if(!d) return 'TBD';
+  const parts = d.split('-');
+  if(parts.length !== 3) return d;
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return parseInt(parts[2],10) + ' ' + months[parseInt(parts[1],10)-1] + ' ' + parts[0];
+}
+function overallPct(){
+  const all = SK.flatMap(k => FW[k].items);
+  const done = computeCounts(all);
+  return all.length ? Math.round(done/all.length*100) : 0;
+}
+function selectedValue(item){
+  const r = state.resp[item.id] || {};
+  if(r.value === 'Custom' && r.custom) return 'Custom: ' + r.custom;
+  return r.value || '';
+}
+
+/* ---------- Report ---------- */
+function buildReportHTML(){
+  const m = state.meta;
+  const pct = overallPct();
+  const all = SK.flatMap(k => FW[k].items);
+  const gaps = all.filter(i => {
+    const r = state.resp[i.id] || {};
+    return i.type === 'std' && r.status !== 'Confirmed' && r.status !== 'Not Applicable';
+  });
+
+  let html = ''
+    + '<div style="font-family:Inter,-apple-system,sans-serif;">'
+    + '<div style="margin-bottom:22px;">'
+    +   '<div style="font-size:10px;font-weight:700;color:#8A8D91;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Service Model Requirements Report</div>'
+    +   '<div style="font-size:26px;font-weight:800;color:#1E1F1E;">'+(escHtml(m.pn)||'Untitled Product')+'</div>'
+    + '</div>'
+    + '<div style="background:#F5F5F7;border-radius:12px;padding:18px 22px;margin-bottom:20px;">'
+    +   '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">'
+    +     metaBlock('Customer / Account', m.cu)
+    +     metaBlock('Product Owner', m.po)
+    +     metaBlock('Service Delivery Lead', m.sdm)
+    +     metaBlock('Target Go-Live', fmtDate(m.gl))
+    +   '</div>'
+    +   '<div style="margin-top:14px;display:flex;align-items:center;gap:10px;">'
+    +     '<div style="flex:1;background:#E4E4E7;border-radius:4px;height:8px;"><div style="background:linear-gradient(90deg,#AE74FF,#91FF01);height:8px;border-radius:4px;width:'+pct+'%;"></div></div>'
+    +     '<div style="font-size:16px;font-weight:800;color:#1E1F1E;">'+pct+'% Complete</div>'
+    +   '</div>'
+    + '</div>';
+
+  if(gaps.length > 0){
+    html += ''
+      + '<div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:14px 18px;margin-bottom:20px;">'
+      +   '<div style="font-size:13px;font-weight:700;color:#B91C1C;margin-bottom:8px;">&#9888;&#65039; '+gaps.length+' standard requirement'+(gaps.length>1?'s':'')+' not yet confirmed</div>'
+      +   '<div style="display:flex;flex-wrap:wrap;gap:6px;">'
+      +   gaps.map(g => '<span style="background:#FFF;border:1px solid #FECACA;border-radius:6px;padding:3px 9px;font-size:12px;color:#B91C1C;">'+g.id+': '+escHtml(g.label)+'</span>').join('')
+      +   '</div></div>';
+  }
+
+  SK.forEach(k => {
+    const cat = FW[k];
+    const items = cat.items;
+    const confirmed = [], pending = [], na = [];
+    items.forEach(item => {
+      const r = state.resp[item.id] || {};
+      const val = selectedValue(item) || '&mdash;';
+      if(r.status === 'Confirmed') confirmed.push({item, val, notes:r.notes});
+      else if(r.status === 'Not Applicable') na.push({item});
+      else pending.push({item, status: r.status || 'Not Started'});
+    });
+    const addl = state.addl[k] || '';
+    html += '<div style="margin-bottom:20px;border:1px solid #E4E4E7;border-radius:12px;overflow:hidden;">'
+      + '<div style="display:flex;align-items:center;gap:10px;padding:12px 18px;background:#FAFAFA;border-bottom:2px solid '+cat.color+'33;">'
+      +   '<div style="width:32px;height:32px;background:'+cat.color+';border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#FFF;">'+k+'</div>'
+      +   '<div style="font-size:15px;font-weight:700;color:#1E1F1E;">'+cat.title+'</div>'
+      +   '<div style="margin-left:auto;font-size:11.5px;color:#8A8D91;">'+confirmed.length+' confirmed &middot; '+pending.length+' pending &middot; '+na.length+' N/A</div>'
+      + '</div><div style="padding:12px 18px;">';
+    confirmed.forEach(c => {
+      html += '<div style="display:flex;gap:10px;padding:7px 10px;background:#ECFDF5;border-radius:7px;margin-bottom:5px;border:1px solid #A7F3D0;">&#9989;<div><div style="font-size:13px;font-weight:600;color:#1E1F1E;">'+escHtml(c.item.label)+'</div><div style="font-size:12px;color:#4338CA;">'+c.val+(c.notes?' &middot; <em style="color:#6B6E6B;">'+escHtml(c.notes)+'</em>':'')+'</div></div></div>';
+    });
+    pending.forEach(p => {
+      html += '<div style="display:flex;gap:10px;padding:7px 10px;background:#FAFAFA;border-radius:7px;margin-bottom:5px;border:1px solid #E4E4E7;">'+(p.item.type==='std'?'&#9888;&#65039;':'&#9675;')+'<div><div style="font-size:13px;font-weight:600;color:#1E1F1E;">'+escHtml(p.item.label)+' <span style="font-size:10px;background:#FFFBEB;color:#B45309;padding:2px 6px;border-radius:5px;">'+p.status+'</span></div></div></div>';
+    });
+    na.forEach(n => {
+      html += '<div style="display:flex;gap:10px;padding:7px 10px;background:#FAFAFA;border-radius:7px;margin-bottom:5px;border:1px solid #E4E4E7;">&#10060;<div style="font-size:13px;color:#8A8D91;">'+escHtml(n.item.label)+'</div></div>';
+    });
+    if(addl) html += '<div style="padding:9px 12px;background:#F5F3FF;border-radius:7px;border:1px dashed #C4B5FD;margin-top:8px;"><div style="font-size:9px;font-weight:700;color:#8A8D91;text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px;">Product-Specific</div><div style="font-size:13px;color:#1E1F1E;">'+escHtml(addl)+'</div></div>';
+    html += '</div></div>';
+  });
+
+  html += '<div style="margin-top:24px;font-size:11px;color:#B0B0B5;text-align:center;">Generated '+new Date().toLocaleString()+' &middot; Service Model Requirements Tracker</div>';
+  html += '</div>';
+  return html;
+}
+function metaBlock(label, val){
+  return '<div><div style="font-size:9px;font-weight:700;color:#8A8D91;text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px;">'+label+'</div><div style="font-size:14px;font-weight:700;color:#1E1F1E;">'+(escHtml(val)||'&mdash;')+'</div></div>';
+}
+
+async function genReport(){
+  const html = buildReportHTML();
+  document.getElementById('repContent').innerHTML = html;
+  document.getElementById('reportModal').style.display = 'flex';
+
+  // Persist to the backend database and trigger the automated email in one call.
+  const btn = document.getElementById('repEmailStatus');
+  if(btn) btn.textContent = 'Saving and emailing report…';
+  try{
+    const res = await fetch(API_BASE + '/api/generate-report', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ id: currentId, meta: state.meta, resp: state.resp, addl: state.addl, reportHtml: html })
+    });
+    const data = await res.json();
+    if(res.ok){
+      currentId = data.id;
+      if(btn) btn.textContent = data.emailSent
+        ? ('✅ Saved to database and emailed to ' + MAIL_TO_DISPLAY)
+        : (data.emailError
+            ? ('⚠️ Saved to database. Email failed to send: ' + data.emailError)
+            : '⚠️ Saved to database. Email not sent — SMTP is not configured on the server yet.');
+      showToast(data.emailSent ? 'Report saved and emailed.' : 'Report saved. Email not sent.');
+    } else {
+      if(btn) btn.textContent = '⚠️ Could not reach the database. The report below is still accurate.';
+    }
+  } catch(err){
+    if(btn) btn.textContent = '⚠️ Could not reach the server. Showing local report only.';
+  }
+}
+function closeRep(){ document.getElementById('reportModal').style.display = 'none'; }
+
+/* ---------- Backend storage (database) ---------- */
+const API_BASE = '';
+const MAIL_TO_DISPLAY = 'arun.vivek@gmail.com';
+
+function showToast(msg){
+  let t = document.getElementById('toast');
+  if(!t){
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.className = 'toast';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+async function saveToDb(){
+  try{
+    const res = await fetch(API_BASE + '/api/submissions', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ id: currentId, meta: state.meta, resp: state.resp, addl: state.addl })
+    });
+    const data = await res.json();
+    if(res.ok){
+      currentId = data.id;
+      showToast('Saved to database (#' + data.id + ').');
+    } else {
+      showToast('Could not save — check the server connection.');
+    }
+  } catch(err){
+    showToast('Could not reach the server.');
+  }
+}
+
+async function openLoadModal(){
+  const modal = document.getElementById('loadModal');
+  const list = document.getElementById('loadList');
+  list.innerHTML = '<div class="load-empty">Loading saved submissions…</div>';
+  modal.style.display = 'flex';
+  try{
+    const res = await fetch(API_BASE + '/api/submissions');
+    const rows = await res.json();
+    if(!res.ok) throw new Error('failed');
+    if(!rows.length){
+      list.innerHTML = '<div class="load-empty">No submissions saved yet.</div>';
+      return;
+    }
+    list.innerHTML = rows.map(r => ''
+      + '<button class="load-row" onclick="loadSubmission('+r.id+')">'
+      +   '<div class="load-row-main">'
+      +     '<div class="load-row-title">'+escHtml(r.product_name || 'Untitled Product')+'</div>'
+      +     '<div class="load-row-sub">'+escHtml(r.customer || 'No customer set')+' &middot; '+r.completion_pct+'% complete</div>'
+      +   '</div>'
+      +   '<div class="load-row-date">'+new Date(r.updated_at).toLocaleDateString()+'</div>'
+      + '</button>').join('');
+  } catch(err){
+    list.innerHTML = '<div class="load-empty">Could not reach the server. Is the backend running?</div>';
+  }
+}
+function closeLoadModal(){ document.getElementById('loadModal').style.display = 'none'; }
+
+async function loadSubmission(id){
+  try{
+    const res = await fetch(API_BASE + '/api/submissions/' + id);
+    const row = await res.json();
+    if(!res.ok) throw new Error('not found');
+    state = { meta: row.meta || {}, resp: row.resp || {}, addl: row.addl || {} };
+    currentId = row.id;
+    restoreUI();
+    closeLoadModal();
+    showToast('Loaded "' + (row.product_name || 'Untitled Product') + '" from the database.');
+  } catch(err){
+    showToast('Could not load that submission.');
+  }
+}
+
+/* ---------- Export: JSON (save/load) ---------- */
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+function safeName(){
+  return (state.meta.pn || 'service-model').trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'service-model';
+}
+function exportJSON(){
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  downloadBlob(blob, safeName()+'-tracker-data.json');
+}
+function importJSON(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const loaded = JSON.parse(e.target.result);
+      state = Object.assign({meta:{},resp:{},addl:{}}, loaded);
+      restoreUI();
+    } catch(err){
+      alert('This file could not be read. Please choose a valid tracker JSON export.');
+    }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+function restoreUI(){
+  const mf = {pn:'meta_pn', cu:'meta_cu', po:'meta_po', sdm:'meta_sdm', gl:'meta_gl'};
+  Object.keys(mf).forEach(k => {
+    const el = document.getElementById(mf[k]);
+    if(el) el.value = state.meta[k] || '';
+  });
+  SK.forEach(k => {
+    FW[k].items.forEach(item => {
+      const r = state.resp[item.id] || {};
+      const st = document.getElementById('stat_'+item.id); if(st) st.value = r.status || '';
+      const vl = document.getElementById('val_'+item.id); if(vl) vl.value = r.value || '';
+      const cu = document.getElementById('cust_'+item.id); if(cu) cu.value = r.custom || '';
+      const cw = document.getElementById('cust_wrap_'+item.id); if(cw) cw.style.display = (r.value === 'Custom') ? 'block' : 'none';
+      const nt = document.getElementById('notes_'+item.id); if(nt) nt.value = r.notes || '';
+    });
+    const ad = document.getElementById('addl_'+k); if(ad) ad.value = state.addl[k] || '';
+  });
+  refreshAllIcons();
+  updateProg();
+}
+
+/* ---------- Export: Excel ---------- */
+function exportExcel(){
+  const rows = [['Category','ID','Requirement','Type','Status','Selected Value','Notes']];
+  SK.forEach(k => {
+    FW[k].items.forEach(item => {
+      const r = state.resp[item.id] || {};
+      rows.push([FW[k].title, item.id, item.label, TYPE_LABEL[item.type], r.status || 'Not Started', selectedValue(item), r.notes || '']);
+    });
+  });
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:26},{wch:6},{wch:34},{wch:14},{wch:22},{wch:30},{wch:38}];
+  const wb = XLSX.utils.book_new();
+  const summary = [
+    ['Product Name', state.meta.pn || ''],
+    ['Customer / Account', state.meta.cu || ''],
+    ['Product Owner', state.meta.po || ''],
+    ['Service Delivery Lead', state.meta.sdm || ''],
+    ['Target Go-Live', state.meta.gl || ''],
+    ['Completion', overallPct() + '%'],
+    ['Generated On', new Date().toLocaleString()],
+  ];
+  const ws2 = XLSX.utils.aoa_to_sheet(summary);
+  ws2['!cols'] = [{wch:22},{wch:34}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'Summary');
+  XLSX.utils.book_append_sheet(wb, ws, 'Requirements');
+  XLSX.writeFile(wb, safeName()+'-requirements.xlsx');
+}
+
+/* ---------- Export: PDF ---------- */
+function exportPDF(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:'pt', format:'a4'});
+  const pageW = doc.internal.pageSize.getWidth();
+  const margin = 40;
+  let y = 50;
+
+  doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(138,141,145);
+  doc.text('SERVICE MODEL REQUIREMENTS REPORT', margin, y);
+  y += 22;
+  doc.setFontSize(20); doc.setTextColor(30,31,30);
+  doc.text(state.meta.pn || 'Untitled Product', margin, y);
+  y += 22;
+
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(83,86,91);
+  const metaLine = [
+    ['Customer', state.meta.cu || '—'],
+    ['Product Owner', state.meta.po || '—'],
+    ['Service Delivery Lead', state.meta.sdm || '—'],
+    ['Target Go-Live', state.meta.gl || 'TBD'],
+    ['Completion', overallPct() + '%'],
+  ];
+  metaLine.forEach(pair => {
+    doc.setFont('helvetica','bold'); doc.setTextColor(138,141,145);
+    doc.text(pair[0]+':', margin, y);
+    doc.setFont('helvetica','normal'); doc.setTextColor(30,31,30);
+    doc.text(String(pair[1]), margin + 130, y);
+    y += 15;
+  });
+  y += 10;
+
+  SK.forEach(k => {
+    const cat = FW[k];
+    const body = cat.items.map(item => {
+      const r = state.resp[item.id] || {};
+      return [item.id, item.label, r.status || 'Not Started', selectedValue(item) || '—', r.notes || ''];
+    });
+    if(y > 700){ doc.addPage(); y = 50; }
+    doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(30,31,30);
+    doc.text(cat.title, margin, y);
+    y += 6;
+    doc.autoTable({
+      startY: y,
+      margin: {left: margin, right: margin},
+      head: [['ID','Requirement','Status','Selected Value','Notes']],
+      body: body,
+      styles: {fontSize:8, cellPadding:4, textColor:[30,31,30]},
+      headStyles: {fillColor:[30,31,30], textColor:[255,255,255], fontStyle:'bold'},
+      alternateRowStyles: {fillColor:[245,245,247]},
+      columnStyles: {0:{cellWidth:28}, 1:{cellWidth:120}, 2:{cellWidth:90}, 3:{cellWidth:120}},
+    });
+    y = doc.lastAutoTable.finalY + 20;
+  });
+
+  doc.save(safeName()+'-report.pdf');
+}
+
+/* ---------- Export: Word ---------- */
+function exportWord(){
+  const content = buildReportHTML();
+  const html = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>"
+    + "<head><meta charset='utf-8'><title>"+escHtml(state.meta.pn || 'Service Model Requirements Report')+"</title></head>"
+    + "<body>" + content + "</body></html>";
+  const blob = new Blob(['\ufeff', html], {type:'application/msword'});
+  downloadBlob(blob, safeName()+'-report.doc');
+}
+
+/* ---------- Reset ---------- */
+function clearAll(){
+  if(confirm('Reset all responses? This cannot be undone unless you have exported a JSON backup.')){
+    state = {meta:{}, resp:{}, addl:{}};
+    currentId = null;
+    restoreUI();
+  }
+}
+
+window.addEventListener('DOMContentLoaded', function(){
+  renderTabsAndSections();
+  showSection('A');
+  updateProg();
+  document.getElementById('accessInput').focus();
+});
+
+</script>
+</body>
+</html>
